@@ -676,28 +676,37 @@ msCCAl0 = function(xlist, ncomp, xlist.te =NULL, init_method = "soft-thr", nfold
   }
   msCCAproximal_l0 = mCCA$new(X = xlist, beta_init =NULL, norm_type = 0, init_method = init_method,
                               rho_maxit = rho_maxit, print_out = print_out, rho_tol = rho_tol,
-                              eps = eps, trace = T)
+                              eps = eps, trace = trace)
   beta_inits = list()
   selected_penalties = rep(0, ncomp)
   for(k in 1:ncomp){
     print(paste0("####################comp", k))
     beta_inits[[k]] = msCCAproximal_l0$beta_init
+    
     if(!is.null(norms)){
       out = msCCAproximal_l0$direction_update_l0_single(X =  msCCAproximal_l0$X, R =  msCCAproximal_l0$R, 
                                                         beta_init =  msCCAproximal_l0$beta_init, l0norm = norms[k], trace = trace)
       #update
       selected_penalties[k] = norms[k]
-      msCCAproximal_l0$direction_grow_lazy(out, norm = norms[k])
+      msCCAproximal_l1$direction_grow_lazy(out, norm = norms[k])
     }else{
-      #create a norm with equal value
-      msCCAproximal_l0$direction_update_grid(norm_grids = norm_grids, trace = trace , update = T)
-      msCCAproximal_l0$direction_cv_grid(foldid = foldid, trace = F)
-      msCCAproximal_l0$out_cv$rho_cv[is.na(msCCAproximal_l0$out_cv$rho_cv)] = 0
-      selected_penalties[k] =  which.max(msCCAproximal_l0$out_cv$rho_cv)
-      msCCAproximal_l0$direction_grow(model_idx =selected_penalties[k])
-      selected_penalties[k] = norm_grids[selected_penalties[k]]
       if(mode == "lazy"){
+        #create a norm with equal value
+        msCCAproximal_l0$direction_update_grid(norm_grids = norm_grids, trace = trace , update = T)
+        msCCAproximal_l0$direction_cv_grid(foldid = foldid, trace = trace)
+        msCCAproximal_l0$out_cv$rho_cv[is.na(msCCAproximal_l0$out_cv$rho_cv)] = 0
+        selected_penalties[k] =  which.max(msCCAproximal_l0$out_cv$rho_cv)
+        msCCAproximal_l0$direction_grow(model_idx =selected_penalties[k])
+        selected_penalties[k] = norm_grids[selected_penalties[k]]
         norms = rep(selected_penalties[k], ncomp)
+      }else{
+        #do not create norms and tune every time
+        msCCAproximal_l0$direction_update_grid(norm_grids = norm_grids, trace = trace , update = T)
+        msCCAproximal_l0$direction_cv_grid(foldid = foldid, trace = trace)
+        msCCAproximal_l0$out_cv$rho_cv[is.na(msCCAproximal_l0$out_cv$rho_cv)] = 0
+        selected_penalties[k] =  which.max(msCCAproximal_l0$out_cv$rho_cv)
+        msCCAproximal_l0$direction_grow(model_idx =selected_penalties[k])
+        selected_penalties[k] = norm_grids[selected_penalties[k]]
       }
     }
     if(k < ncomp){
