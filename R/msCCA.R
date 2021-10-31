@@ -4,7 +4,7 @@ my_init = function(xlist, A = 4){
   ps = sapply(xlist, function(z) dim(z)[2])
   pss = c(0,cumsum(ps))
   ptotal = pss[D+1]
-  n = nrow(xagg)
+  n = nrow(xlist[[1]])
   xagg = matrix(0, nrow = n, ncol = ptotal)
   for(d in 1:D){
     ll = (pss[d]+1):pss[d+1]
