@@ -395,7 +395,8 @@ mCCA = R6::R6Class(classname = "msCCAobj",public= list(
       
     }
     outputs <-try(mclapply(inputs,fun0, mc.cores =n.core))
-    if(class(outputs[[1]]) == "try-error"){
+    if(class(outputs) == "try-error"){
+      print(class(outputs))
       for(i in 1:length(fold_ids)){
         inputs[[i]][2] = 1
       }
