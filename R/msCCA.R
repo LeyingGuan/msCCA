@@ -688,7 +688,7 @@ msCCAl0 = function(xlist, ncomp, xlist.te =NULL, init_method = "soft-thr", nfold
                                                         beta_init =  msCCAproximal_l0$beta_init, l0norm = norms[k], trace = trace)
       #update
       selected_penalties[k] = norms[k]
-      msCCAproximal_l1$direction_grow_lazy(out, norm = norms[k])
+      msCCAproximal_l0$direction_grow_lazy(out, norm = norms[k])
     }else{
       if(mode == "lazy"){
         #create a norm with equal value
