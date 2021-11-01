@@ -186,7 +186,7 @@ PMA_wrapper = function(xlist, xlist.te, ncomp, nperms = 10){
 rgcca_wrapper = function(xlist,xlist.te, ncomp){
   fitted <- try(rgcca(A = xlist,  tau = "optimal",
                             scheme = "horst", verbose =F, ncomp = rep(ncomp,length(xlist))))
-  if(!"try-error"%in%class(  fitted)){
+  if("try-error"%in%class(fitted)){
     fitted <- try(rgcca(A = xlist,  tau = "optimal",
                               scheme = "horst", verbose =F, 
                               ncomp = rep(ncomp,length(xlist)),
